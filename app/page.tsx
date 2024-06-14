@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
-  return <main>Please enter /install</main>;
+  return <main><Link href="/install">CONNECT WITH CALENDLY</Link></main>;
 }
