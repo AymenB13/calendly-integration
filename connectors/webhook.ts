@@ -39,16 +39,6 @@ export const createWebhooks = async (
   );
   
   if (!response.ok) {
-    throw new Error("Could not retrieve users");
+    console.log("webhook response error", response.ok)
   }
-  const data: unknown = await response.json();
-
-  const result = createWebhooksResponseSchema.safeParse(data);
-  if (!result.success) {
-    throw new Error("Invalid createWebhooks response", {
-      cause: result.error,
-    });
-  }
-
-  return result.data.resource.uri;
 };
