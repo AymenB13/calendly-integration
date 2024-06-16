@@ -32,3 +32,9 @@ export const extractTopLevelProperties = async (
   }
   return result;
 };
+
+export const extractUUID = async (url: string) => {
+  const regex = /organization_memberships\/([a-f0-9-]{36})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};

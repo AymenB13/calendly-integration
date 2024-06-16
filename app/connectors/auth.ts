@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const tokenResponseSchema = z.object({
   access_token: z.string(),
+  refresh_token: z.string(),
   organization: z.string(),
   owner: z.string(),
 });
@@ -42,7 +43,41 @@ export const getToken = async (code: string) => {
 
   return {
     accessToken: result.data.access_token,
+    refreshToken: result.data.refresh_token,
     organization: result.data.organization,
     owner: result.data.owner,
+  };
+};
+
+export const getRefreshToken = async (refreshToken: string) => {
+  const encodedKey = Buffer.from(`${clientId}:${clientSecret}`).toString(
+    "base64"
+  );
+  const response = await fetch(`https://auth.calendly.com/oauth/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: `${encodedKey}`,
+    },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Could not retrieve token', { cause: response.statusText });
+  }
+
+  const data: unknown = await response.json();
+
+  const result = tokenResponseSchema.safeParse(data);
+
+  if (!result.success) {
+    throw new Error('Invalid Calendly token response');
+  }
+
+  return {
+    accessToken: result.data.access_token,
   };
 };
