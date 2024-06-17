@@ -7,7 +7,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // Process the webhook event
   const event = JSON.parse(body);
 
-  console.log("event:", event)
   if (!process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL) {
     return new NextResponse("Invalid googesheet webhook url", {
       status: 404,

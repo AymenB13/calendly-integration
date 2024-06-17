@@ -60,6 +60,8 @@ export const getRefreshToken = async (refreshToken: string) => {
       Authorization: `${encodedKey}`,
     },
     body: new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_CALENDLY_CLIENT_ID as string,
+      client_secret: process.env.NEXT_PUBLIC_CALENDLY_CLIENT_SECRET as string,
       grant_type: 'refresh_token',
       refresh_token: refreshToken,
     }),

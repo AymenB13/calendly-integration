@@ -26,6 +26,7 @@ export const setupOrganisation = async ({ code }: SetupOrganisationParams) => {
         user_id: owner,
         event: "grant.created",
         refresh_token: refreshToken,
+        organization,
       }),
     }
   );

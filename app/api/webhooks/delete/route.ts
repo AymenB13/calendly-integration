@@ -5,22 +5,26 @@ import { listWebhooks, deleteWebhooks } from "@/app/connectors/webhook";
 type DeleteWebhookParams = {
   userId: string;
   refreshToken: string;
+  organization: string;
 };
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const body = await request.json() as DeleteWebhookParams; // Use JSON method directly
-    const { userId, refreshToken } = body;
+    const body = (await request.json()) as DeleteWebhookParams; // Use JSON method directly
+    const { userId, refreshToken, organization } = body;
 
     if (!userId || !refreshToken) {
-      return new NextResponse("Invalid userId or refreshToken", { status: 400 });
+      return new NextResponse("Invalid userId or refreshToken", {
+        status: 400,
+      });
     }
 
     const { accessToken } = await getRefreshToken(refreshToken);
-    const { uris } = await listWebhooks(accessToken);
+
+    const { uris } = await listWebhooks(accessToken, organization);
 
     const results = await Promise.all(
-      uris.map(async ({ uri }) => {
+      uris.map(async (uri) => {
         try {
           const response = await deleteWebhooks(uri, accessToken);
           return { uri, status: response.status, success: true };
@@ -31,13 +35,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       })
     );
 
-    const failedStatuses = results.filter(result => !result.success && [401, 403, 404].includes(result.status));
+    const failedStatuses = results.filter(
+      (result) => !result.success && [401, 403, 404].includes(result.status)
+    );
 
     if (failedStatuses.length > 0) {
-      return new NextResponse("Failed to delete some webhooks", { status: 500 });
+      return new NextResponse("Failed to delete some webhooks", {
+        status: 500,
+      });
     }
 
-    return new NextResponse("All webhooks deleted successfully", { status: 200 });
+    return new NextResponse("All webhooks deleted successfully", {
+      status: 200,
+    });
   } catch (error) {
     console.error("Error processing request:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

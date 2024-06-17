@@ -34,7 +34,7 @@ export const extractTopLevelProperties = async (
 };
 
 export const extractUUID = async (url: string) => {
-  const regex = /organization_memberships\/([a-f0-9-]{36})/;
+  const regex = /webhook_subscriptions\/([a-f0-9-]{36})/;
   const match = url.match(regex);
   return match ? match[1] : null;
 };
