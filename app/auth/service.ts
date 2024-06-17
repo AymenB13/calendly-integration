@@ -1,6 +1,7 @@
 import { getToken } from "@/app/connectors/auth";
 import { createWebhooks } from "@/app/connectors/webhook";
 import { extractUUID } from "@/utils/extract";
+import { getUser } from "../connectors/user";
 
 type SetupOrganisationParams = {
   code: string;
@@ -11,6 +12,10 @@ export const setupOrganisation = async ({ code }: SetupOrganisationParams) => {
   const { accessToken, refreshToken, organization, owner } = await getToken(
     code
   );
+  console.log("accessToken", accessToken)
+  const { user } = await getUser({ accessToken })
+  console.log("user", user)
+  
   if (!process.env.NEXT_PUBLIC_GOOGLE_SHEETS_WEBHOOK_URL) {
     console.error("Invalid Webhook URL");
     return;
@@ -27,6 +32,7 @@ export const setupOrganisation = async ({ code }: SetupOrganisationParams) => {
         event: "grant.created",
         refresh_token: refreshToken,
         organization,
+        user,
       }),
     }
   );
